@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Author {
+  id         String   @id @default(uuid())
+  avatar_url String
+  name       String
+  role       String
+  created_at DateTime @default(now())
+  Post       Post[]
+
+  @@map("author")
+}
+
+model Content {
+  id         String   @id @default(uuid())
+  text       String
+  created_at DateTime @default(now())
+  Post       Post[]
+
+  @@map("content")
+}
+
+model Post {
+  id         String   @id @default(uuid())
+  created_at DateTime @default(now())
+  author     Author   @relation(fields: [author_id], references: [id])
+  author_id  String
+  content    Content  @relation(fields: [content_id], references: [id])
+  content_id String
+
+  @@map("post")
+}
+
+model CommentAuthor {
+  id         String    @id @default(uuid())
+  name       String
+  created_at DateTime  @default(now())
+  Comment    Comment[]
+
+  @@map("comment_author")
+}
+
+model Comment {
+  id                String        @id @default(uuid())
+  created_at        DateTime      @default(now())
+  text              String
+  comment_author    CommentAuthor @relation(fields: [comment_author_id], references: [id])
+  comment_author_id String
+
+  @@map("comment")
+}
